@@ -1,9 +1,10 @@
-const config = require('./utills/config');
+const config = require('./utils/config');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const logger = require('./utills/logger');
+require('express-async-errors');
+const logger = require('./utils/logger');
 const blogsRouter = require('./controllers/blogs');
-const middleware = require('./utills/middleware');
+const middleware = require('./utils/middleware');
 const express = require('express');
 const app = express();
 
@@ -14,7 +15,7 @@ logger.info('connecting to', config.MONGODB_URI);
 mongoose
   .connect(config.MONGODB_URI)
   .then(() => {
-    console.log('connected to MongoDB');
+    logger.info('connected to MongoDB');
   })
   .catch((error) => {
     logger.error('error connecting to MongoDB:', error.message);
