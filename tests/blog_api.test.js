@@ -62,6 +62,30 @@ describe('blogs api', () => {
     delete blog.title;
     delete blog.url;
     await api.post('/api/blogs').send(blog).expect(400);
+    const blogs = await api.get('/api/blogs');
+    expect(blogs.body).toHaveLength(helper.initialBlogs.length);
+  });
+
+  test('a blog can be deleted', async () => {
+    const blogs = await api.get('/api/blogs');
+    const blogToDelete = blogs.body[0];
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    const blogsAfterDelete = await api.get('/api/blogs');
+    expect(blogsAfterDelete.body).toHaveLength(blogs.body.length - 1);
+    const titles = blogsAfterDelete.body.map((blog) => blog.title);
+    expect(titles).not.toContain(blogToDelete.title);
+  });
+
+  test('a blog can be updated', async () => {
+    const blogs = await api.get('/api/blogs');
+    const blogToUpdate = blogs.body[0];
+    blogToUpdate.likes = 100;
+    await api.put(`/api/blogs/${blogToUpdate.id}`).send(blogToUpdate);
+    const blogsAfterUpdate = await api.get('/api/blogs');
+    const updatedBlog = blogsAfterUpdate.body.find(
+      (blog) => blog.id === blogToUpdate.id
+    );
+    expect(updatedBlog.likes).toBe(blogToUpdate.likes);
   });
 });
 
