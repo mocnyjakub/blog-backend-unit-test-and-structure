@@ -47,9 +47,14 @@ describe('users api', () => {
     await api.post('/api/users').send(newUser).expect(400);
   });
 
-  test('creation fails with proper statuscode and message if required data is missing', async () => {});
+  test('creation fails with proper statuscode and message if payload is invalid', async () => {
+    const newUser = {
+      name: 'Matti Luukkainen',
+    };
 
-  test('creation fails with proper statuscode and message if data is invalid', async () => {});
+    const { body } = await api.post('/api/users').send(newUser).expect(400);
+    expect(body.error).toContain('password or username is invalid');
+  });
 });
 
 afterAll(() => {
